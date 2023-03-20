@@ -10,4 +10,6 @@ public:
     size_t parseHIDDataMouse(uint8_t* buf);
 };
 
+typedef size_t (BLEComboParser::*parser_t)(uint8_t*);
+
 #endif

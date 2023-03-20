@@ -24,10 +24,12 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
     DEBUG_PRINTF("\n");
     if (!(_ble->isConnected()))
         return;
-    if (ep == 1)
-        _ble->parseHIDDataKeyboard(buf);
-    else if (ep == 2)
-        _ble->parseHIDDataMouse(buf);
+    static const parser_t parsers[] = {
+        (const parser_t)(NULL),
+        (const parser_t)(&BLEComboParser::parseHIDDataKeyboard),
+        (const parser_t)(&BLEComboParser::parseHIDDataMouse),
+    };
+    (_ble->*parsers[ep])(buf);
 }
 
 uint8_t HIDSelector::HandleLockingKeys(USBHID* hid, uint8_t key)
