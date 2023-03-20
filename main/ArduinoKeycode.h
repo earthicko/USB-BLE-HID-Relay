@@ -1,0 +1,84 @@
+#ifndef ARDUINOKEYCODE_H
+#define ARDUINOKEYCODE_H
+
+//================================================================================
+//================================================================================
+//  Keyboard
+
+// Modifiers
+#define KEY_ARDUINO_LEFT_CTRL 0x80
+#define KEY_ARDUINO_LEFT_SHIFT 0x81
+#define KEY_ARDUINO_LEFT_ALT 0x82
+#define KEY_ARDUINO_LEFT_GUI 0x83
+#define KEY_ARDUINO_RIGHT_CTRL 0x84
+#define KEY_ARDUINO_RIGHT_SHIFT 0x85
+#define KEY_ARDUINO_RIGHT_ALT 0x86
+#define KEY_ARDUINO_RIGHT_GUI 0x87
+
+// Misc keys
+#define KEY_ARDUINO_UP_ARROW 0xDA
+#define KEY_ARDUINO_DOWN_ARROW 0xD9
+#define KEY_ARDUINO_LEFT_ARROW 0xD8
+#define KEY_ARDUINO_RIGHT_ARROW 0xD7
+#define KEY_ARDUINO_BACKSPACE 0xB2
+#define KEY_ARDUINO_TAB 0xB3
+#define KEY_ARDUINO_RETURN 0xB0
+#define KEY_ARDUINO_MENU 0xED // "Keyboard Application" in USB standard
+#define KEY_ARDUINO_ESC 0xB1
+#define KEY_ARDUINO_INSERT 0xD1
+#define KEY_ARDUINO_DELETE 0xD4
+#define KEY_ARDUINO_PAGE_UP 0xD3
+#define KEY_ARDUINO_PAGE_DOWN 0xD6
+#define KEY_ARDUINO_HOME 0xD2
+#define KEY_ARDUINO_END 0xD5
+#define KEY_ARDUINO_CAPS_LOCK 0xC1
+#define KEY_ARDUINO_PRINT_SCREEN 0xCE // Print Screen / SysRq
+#define KEY_ARDUINO_SCROLL_LOCK 0xCF
+#define KEY_ARDUINO_PAUSE 0xD0 // Pause / Break
+
+// Numeric keypad
+#define KEY_ARDUINO_NUM_LOCK 0xDB
+#define KEY_ARDUINO_KP_SLASH 0xDC
+#define KEY_ARDUINO_KP_ASTERISK 0xDD
+#define KEY_ARDUINO_KP_MINUS 0xDE
+#define KEY_ARDUINO_KP_PLUS 0xDF
+#define KEY_ARDUINO_KP_ENTER 0xE0
+#define KEY_ARDUINO_KP_1 0xE1
+#define KEY_ARDUINO_KP_2 0xE2
+#define KEY_ARDUINO_KP_3 0xE3
+#define KEY_ARDUINO_KP_4 0xE4
+#define KEY_ARDUINO_KP_5 0xE5
+#define KEY_ARDUINO_KP_6 0xE6
+#define KEY_ARDUINO_KP_7 0xE7
+#define KEY_ARDUINO_KP_8 0xE8
+#define KEY_ARDUINO_KP_9 0xE9
+#define KEY_ARDUINO_KP_0 0xEA
+#define KEY_ARDUINO_KP_DOT 0xEB
+
+// Function keys
+#define KEY_ARDUINO_F1 0xC2
+#define KEY_ARDUINO_F2 0xC3
+#define KEY_ARDUINO_F3 0xC4
+#define KEY_ARDUINO_F4 0xC5
+#define KEY_ARDUINO_F5 0xC6
+#define KEY_ARDUINO_F6 0xC7
+#define KEY_ARDUINO_F7 0xC8
+#define KEY_ARDUINO_F8 0xC9
+#define KEY_ARDUINO_F9 0xCA
+#define KEY_ARDUINO_F10 0xCB
+#define KEY_ARDUINO_F11 0xCC
+#define KEY_ARDUINO_F12 0xCD
+#define KEY_ARDUINO_F13 0xF0
+#define KEY_ARDUINO_F14 0xF1
+#define KEY_ARDUINO_F15 0xF2
+#define KEY_ARDUINO_F16 0xF3
+#define KEY_ARDUINO_F17 0xF4
+#define KEY_ARDUINO_F18 0xF5
+#define KEY_ARDUINO_F19 0xF6
+#define KEY_ARDUINO_F20 0xF7
+#define KEY_ARDUINO_F21 0xF8
+#define KEY_ARDUINO_F22 0xF9
+#define KEY_ARDUINO_F23 0xFA
+#define KEY_ARDUINO_F24 0xFB
+
+#endif
