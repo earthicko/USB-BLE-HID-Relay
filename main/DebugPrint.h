@@ -4,9 +4,11 @@
 #include <Arduino.h>
 #include "SerialPrintf.h"
 
+// #define _DEBUG
+
 #ifdef _DEBUG
 #define DEBUG_PRINT(str) Serial.print(str)
-#define DEBUG_PRINTF(str, ...) SerialPrintf(str, ...)
+#define DEBUG_PRINTF(...) SerialPrintf(__VA_ARGS__)
 #define DEBUG_PRINTLN(str) Serial.println(str)
 #else
 #define DEBUG_PRINT(x)
