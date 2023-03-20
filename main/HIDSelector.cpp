@@ -1,6 +1,5 @@
 #include "HIDSelector.h"
 #include "DebugPrint.h"
-#include "IBMKeycode.h"
 
 HIDSelector::HIDSelector(USB* p, BLEComboParser* ble)
     : HIDComposite(p)
