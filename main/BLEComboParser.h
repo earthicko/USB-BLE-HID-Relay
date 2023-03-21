@@ -3,13 +3,16 @@
 
 #include <BLECombo.h>
 
+#define BLECOMBOPARSER_SCROLL_MULTIPLIER 1
+#define BLECOMBOPARSER_SCROLL_DIVIDER 4
+
 class BLEComboParser : public BLECombo {
 public:
     BLEComboParser(std::string deviceName = "ESP32 Combo", std::string deviceManufacturer = "Espressif", uint8_t batteryLevel = 90);
-    size_t parseHIDDataKeyboard(uint8_t* buf);
-    size_t parseHIDDataMouse(uint8_t* buf);
+    size_t parseHIDDataKeyboard(int8_t* buf);
+    size_t parseHIDDataMouse(int8_t* buf);
 };
 
-typedef size_t (BLEComboParser::*parser_t)(uint8_t*);
+typedef size_t (BLEComboParser::*parser_t)(int8_t*);
 
 #endif
