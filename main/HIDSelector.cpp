@@ -26,13 +26,13 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
     DEBUG_PRINTF("}, %llu", *((uint64_t*)buf));
     DEBUG_PRINTF("\n");
 
-    if (ep == 2 && buf[0] == 3 && buf[1] == 0 && buf[2] == 0 && buf[3] == 1) {
-        // Fn + Space (Magnifier)
+    if (ep == 2 && *((uint32_t*)buf) == 0x1000003) {
+        // buf = {3, 0, 0, 1, } (Fn + Space)
+        delay(1000);
         DEBUG_PRINTF("Reset USB\n");
         pUsb->reset();
         if (pUsb->Init() == -1)
             DEBUG_PRINTF("OSC did not start.");
-        delay(200);
         return;
     }
 
