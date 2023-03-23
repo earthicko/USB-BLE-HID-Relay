@@ -68,8 +68,15 @@ static bool should_update_led(void)
 
 void loop()
 {
+    static bool connection;
+
     relay.task();
     if (relay._bleCombo.isConnected()) {
+        if (connection == false) {
+            uint8_t lockLeds = relay._bleCombo.getKeyLedValue();
+            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+            connection = true;
+        }
         digitalWrite(MONITOR_PIN_LED, LOW);
         if (should_update_battery()) {
             int volt_level = analogRead(MONITOR_PIN_BATTERY_VOLT);
@@ -82,11 +89,9 @@ void loop()
             DEBUG_PRINTF("Voltage level %d\n", volt_level);
             relay._bleCombo.setBatteryLevel(volt_level);
         }
-        if (should_update_led) {
-            uint8_t lockLeds = relay._bleCombo.getKeyLedValue();
-            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
-        }
     } else {
+        if (connection == true)
+            connection = false;
         if (should_update_blink_led()) {
             long blink_stat = millis() / MONITOR_BLINK_PERIOD;
             uint8_t lockLeds;
