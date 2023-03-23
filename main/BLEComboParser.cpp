@@ -84,20 +84,21 @@ void BLEComboParser::parseHIDDataMouse(const int8_t* buf)
         DEBUG_PRINTF("}\n");
 
         mouseNotify(sizeof(m), (uint8_t*)m);
+    } else if (buf[0] == 2) {
+        HANDLE_KEY(buf[1] == 2, KEY_ARDUINO_F15);
     } else if (buf[0] == 3) {
-        if (buf[1] == 0 && buf[2] == 0 && buf[3] == 0) { // release
-            keyRelease(KEY_MEDIA_WWW_HOME);
-            keyRelease(KEY_MEDIA_VOLUME_UP);
-            keyRelease(KEY_MEDIA_VOLUME_DOWN);
-            keyRelease(KEY_MEDIA_MUTE);
-        } else if (buf[1] == 0 && buf[2] == 64 && buf[3] == 0) { // ACCESS_IBM
-            keyPress(KEY_MEDIA_WWW_HOME);
-        } else if (buf[1] == 1 && buf[2] == 0 && buf[3] == 0) {
-            keyPress(KEY_MEDIA_VOLUME_UP);
-        } else if (buf[1] == 2 && buf[2] == 0 && buf[3] == 0) {
-            keyPress(KEY_MEDIA_VOLUME_DOWN);
-        } else if (buf[1] == 4 && buf[2] == 0 && buf[3] == 0) {
-            keyPress(KEY_MEDIA_MUTE);
-        }
+        uint32_t pattern = *((uint32_t*)buf);
+        DEBUG_PRINTF("buf as uint32_t = %x\n", pattern);
+        HANDLE_KEY(pattern & BYTES_MAGNIFIER, KEY_ARDUINO_F13);
+        HANDLE_KEY(pattern & BYTES_SCREEN_OFF, KEY_ARDUINO_F14);
+        HANDLE_KEY(pattern & BYTES_WIRELESS, KEY_ARDUINO_F16);
+        HANDLE_KEY(pattern & BYTES_SCREEN_OUTPUT, KEY_ARDUINO_F17);
+        HANDLE_KEY(pattern & BYTES_HIBERNATE, KEY_ARDUINO_F18);
+        HANDLE_KEY(pattern & BYTES_BRIGHTNESS_UP, KEY_ARDUINO_F20);
+        HANDLE_KEY(pattern & BYTES_BRIGHTNESS_DOWN, KEY_ARDUINO_F21);
+        HANDLE_KEY(pattern & BYTES_ACCESS_IBM, KEY_ARDUINO_F22);
+        HANDLE_KEY(pattern & BYTES_VOLUME_UP, KEY_MEDIA_VOLUME_UP);
+        HANDLE_KEY(pattern & BYTES_VOLUME_DOWN, KEY_MEDIA_VOLUME_DOWN);
+        HANDLE_KEY(pattern & BYTES_VOLUME_MUTE, KEY_MEDIA_MUTE);
     }
 }
