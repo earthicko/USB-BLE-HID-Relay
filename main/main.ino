@@ -11,7 +11,8 @@ Real    Divided  ADC
 #define MONITOR_BATTERY_VOLT_MAX 3475
 #define MONITOR_BATTERY_VOLT_MIN 2978
 #define MONITOR_BLINK_FREQ 1000
-#define MONITOR_UPDATE_FREQ 1000000
+#define MONITOR_UPDATE_FREQ_BATT 10000
+#define MONITOR_UPDATE_FREQ_LED 100
 
 USBBLERelay relay;
 
@@ -29,13 +30,36 @@ void setup()
     relay.begin();
 }
 
+static bool should_update_battery(void)
+{
+    static int prev_update_time;
+
+    int time_now = millis() / MONITOR_UPDATE_FREQ_BATT;
+    if (time_now != prev_update_time) {
+        prev_update_time = time_now;
+        return (true);
+    }
+    return (false);
+}
+
+static bool should_update_led(void)
+{
+    static int prev_update_time;
+
+    int time_now = millis() / MONITOR_UPDATE_FREQ_LED;
+    if (time_now != prev_update_time) {
+        prev_update_time = time_now;
+        return (true);
+    }
+    return (false);
+}
+
 void loop()
 {
-    static int update_counter;
     relay.task();
     if (relay._bleCombo.isConnected()) {
         digitalWrite(MONITOR_PIN_LED, LOW);
-        if (update_counter % MONITOR_UPDATE_FREQ == 0) {
+        if (should_update_battery()) {
             int volt_level = analogRead(MONITOR_PIN_BATTERY_VOLT);
             DEBUG_PRINTF("Voltage level %d\n", volt_level);
             volt_level = map(volt_level, MONITOR_BATTERY_VOLT_MIN, MONITOR_BATTERY_VOLT_MAX, 0, 100);
@@ -46,7 +70,10 @@ void loop()
             DEBUG_PRINTF("Voltage level %d\n", volt_level);
             relay._bleCombo.setBatteryLevel(volt_level);
         }
-        update_counter++;
+        if (should_update_led) {
+            uint8_t lockLeds = relay._bleCombo.getKeyLedValue();
+            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+        }
     } else {
         long blink_stat = millis() / MONITOR_BLINK_FREQ;
         if (blink_stat % 2)

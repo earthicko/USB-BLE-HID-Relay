@@ -29,12 +29,4 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
         (const parser_t)(&BLEComboParser::parseHIDDataMouse),
     };
     (_ble->*parsers[ep])((int8_t*)buf);
-    if (ep == 1) {
-        if (*((uint64_t*)buf) != 0)
-            prev_key = buf[2];
-        else {
-            uint8_t lockLeds = _ble->getKeyLedValue();
-            hid->SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
-        }
-    }
 }
