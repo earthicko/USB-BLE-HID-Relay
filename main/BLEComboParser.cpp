@@ -32,7 +32,7 @@ void BLEComboParser::parseHIDDataMouse(const int8_t* buf)
         int8_t m[5];
         if (buf[1] & MOUSE_MIDDLE) {
             // middle button stays being pressed
-            if (should_update_scroll()) {
+            if (should_update_scroll()) {ㄴ
                 // update scroll movement
                 m[0] = buf[1] & ~((int8_t)MOUSE_MIDDLE); // button state
                 m[1] = 0; // dx
