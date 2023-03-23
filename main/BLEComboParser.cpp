@@ -27,19 +27,22 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
 {
     static bool prev_middle_stat;
     static bool did_trigger_wheel_movement;
+    static int scroll_d[2];
 
     if (buf[0] == 1) {
         int8_t m[5];
         if (buf[1] & MOUSE_MIDDLE) {
             // middle button stays being pressed
-            if (should_update_scroll()) {
+            if (should_update_scroll()) {ㄴ
                 // update scroll movement
                 m[0] = buf[1] & ~((int8_t)MOUSE_MIDDLE); // button state
                 m[1] = 0; // dx
                 m[2] = 0; // dy
-                m[3] = ((int)(-buf[3])) * BLECOMBOPARSER_SCROLL_MULTIPLIER / BLECOMBOPARSER_SCROLL_DIVIDER; // vertical wheel = dy
-                m[4] = ((int)(buf[2])) * BLECOMBOPARSER_SCROLL_MULTIPLIER / BLECOMBOPARSER_SCROLL_DIVIDER; // horizontal wheel = dx
+                m[3] = scroll_d[0] * BLECOMBOPARSER_SCROLL_MULTIPLIER / BLECOMBOPARSER_SCROLL_DIVIDER / BLECOMBOPARSER_SCROLL_UPDATE_FREQ; // vertical wheel = dy
+                m[4] = scroll_d[1] * BLECOMBOPARSER_SCROLL_MULTIPLIER / BLECOMBOPARSER_SCROLL_DIVIDER / BLECOMBOPARSER_SCROLL_UPDATE_FREQ; // horizontal wheel = dx
                 did_trigger_wheel_movement = true;
+                scroll_d[0] = 0;
+                scroll_d[1] = 1;
             } else {
                 // ignore scroll movement
                 m[0] = buf[1] & ~((int8_t)MOUSE_MIDDLE); // button state
@@ -47,6 +50,8 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
                 m[2] = 0; // dy
                 m[3] = 0;
                 m[4] = 0;
+                scroll_d[0] += -buf[3];
+                scroll_d[1] += buf[2];
             }
         } else if (!(buf[1] & MOUSE_MIDDLE) && (prev_middle_stat)) {
             // middle button just being released
