@@ -29,14 +29,6 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
     static bool did_trigger_wheel_movement;
 
     if (buf[0] == 1) {
-        static const int8_t illegal_vals[] = { 40, -40, 56, -56, 24, -24 };
-        for (int8_t i = 2; i <= 3; i++) {
-            for (int8_t j = 0; j < sizeof(illegal_vals) / sizeof(int8_t); j++) {
-                if (buf[i] == illegal_vals[j])
-                    return (0);
-            }
-        }
-
         int8_t m[5];
         if (buf[1] & MOUSE_MIDDLE) {
             // middle button stays being pressed
@@ -69,6 +61,7 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
             } else {
                 // middle button was pressed to act as wheel click
                 mouseClick(MOUSE_MIDDLE);
+                prev_middle_stat = false;
                 return (0);
             }
         } else {
