@@ -11,8 +11,8 @@ Real    Divided  ADC
 #define MONITOR_BATTERY_VOLT_MAX 3475
 #define MONITOR_BATTERY_VOLT_MIN 2978
 #define MONITOR_BLINK_PERIOD 1000
-#define MONITOR_UPDATE_FREQ_BATT 10000
-#define MONITOR_UPDATE_FREQ_LED 100
+#define MONITOR_UPDATE_PERIOD_BATT 10000
+#define MONITOR_UPDATE_PERIOD_LED 300
 
 USBBLERelay relay;
 
@@ -46,7 +46,7 @@ static bool should_update_battery(void)
 {
     static int prev_update_time;
 
-    int time_now = millis() / MONITOR_UPDATE_FREQ_BATT;
+    int time_now = millis() / MONITOR_UPDATE_PERIOD_BATT;
     if (time_now != prev_update_time) {
         prev_update_time = time_now;
         return (true);
@@ -58,7 +58,7 @@ static bool should_update_led(void)
 {
     static int prev_update_time;
 
-    int time_now = millis() / MONITOR_UPDATE_FREQ_LED;
+    int time_now = millis() / MONITOR_UPDATE_PERIOD_LED;
     if (time_now != prev_update_time) {
         prev_update_time = time_now;
         return (true);
