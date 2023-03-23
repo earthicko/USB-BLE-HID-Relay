@@ -11,7 +11,7 @@ Real    Divided  ADC
 #define MONITOR_BATTERY_VOLT_MAX 3475
 #define MONITOR_BATTERY_VOLT_MIN 2978
 #define MONITOR_BLINK_PERIOD 1000
-#define MONITOR_UPDATE_PERIOD_BATT 10000
+#define MONITOR_UPDATE_PERIOD_BATT 30000
 #define MONITOR_UPDATE_PERIOD_LED 300
 
 USBBLERelay relay;
@@ -73,6 +73,7 @@ void loop()
     relay.task();
     if (relay._bleCombo.isConnected()) {
         if (connection == false) {
+            DEBUG_PRINTF("Connected\n");
             uint8_t lockLeds = relay._bleCombo.getKeyLedValue();
             relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
             connection = true;
@@ -80,13 +81,13 @@ void loop()
         digitalWrite(MONITOR_PIN_LED, LOW);
         if (should_update_battery()) {
             int volt_level = analogRead(MONITOR_PIN_BATTERY_VOLT);
-            DEBUG_PRINTF("Voltage level %d\n", volt_level);
+            DEBUG_PRINTF("Voltage level %d ", volt_level);
             volt_level = map(volt_level, MONITOR_BATTERY_VOLT_MIN, MONITOR_BATTERY_VOLT_MAX, 0, 100);
             if (volt_level < 0)
                 volt_level = 0;
             if (volt_level > 100)
                 volt_level = 100;
-            DEBUG_PRINTF("Voltage level %d\n", volt_level);
+            DEBUG_PRINTF("Battery %d%%\n", volt_level);
             relay._bleCombo.setBatteryLevel(volt_level);
         }
     } else {
