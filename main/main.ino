@@ -10,7 +10,7 @@ Real    Divided  ADC
 #define MONITOR_PIN_BATTERY_VOLT 4
 #define MONITOR_BATTERY_VOLT_MAX 3475
 #define MONITOR_BATTERY_VOLT_MIN 2978
-#define MONITOR_BLINK_FREQ 1000
+#define MONITOR_BLINK_PERIOD 1000
 #define MONITOR_UPDATE_FREQ_BATT 10000
 #define MONITOR_UPDATE_FREQ_LED 100
 
@@ -28,6 +28,18 @@ void setup()
     // minimum 0x00, maximum 0xff, default 0x80
     UsbDEBUGlvl = 0x00;
     relay.begin();
+}
+
+static bool should_update_blink_led(void)
+{
+    static int prev_update_time;
+
+    int time_now = millis() / MONITOR_BLINK_PERIOD;
+    if (time_now != prev_update_time) {
+        prev_update_time = time_now;
+        return (true);
+    }
+    return (false);
 }
 
 static bool should_update_battery(void)
@@ -75,10 +87,17 @@ void loop()
             relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
         }
     } else {
-        long blink_stat = millis() / MONITOR_BLINK_FREQ;
-        if (blink_stat % 2)
-            digitalWrite(MONITOR_PIN_LED, HIGH);
-        else
-            digitalWrite(MONITOR_PIN_LED, LOW);
+        if (should_update_blink_led()) {
+            long blink_stat = millis() / MONITOR_BLINK_PERIOD;
+            uint8_t lockLeds;
+            if (blink_stat % 2) {
+                digitalWrite(MONITOR_PIN_LED, HIGH);
+                lockLeds = 0;
+            } else {
+                digitalWrite(MONITOR_PIN_LED, LOW);
+                lockLeds = 7;
+            }
+            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+        }
     }
 }
