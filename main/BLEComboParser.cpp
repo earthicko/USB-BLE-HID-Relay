@@ -6,10 +6,9 @@ BLEComboParser::BLEComboParser(std::string deviceName, std::string deviceManufac
 {
 }
 
-size_t BLEComboParser::parseHIDDataKeyboard(int8_t* buf)
+void BLEComboParser::parseHIDDataKeyboard(const int8_t* buf)
 {
     this->sendReport((keyreport_t*)buf);
-    return (1);
 }
 
 static bool should_update_scroll(void)
@@ -23,7 +22,7 @@ static bool should_update_scroll(void)
     return (true);
 }
 
-size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
+void BLEComboParser::parseHIDDataMouse(const int8_t* buf)
 {
     static bool prev_middle_stat;
     static bool did_trigger_wheel_movement;
@@ -67,7 +66,7 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
                 // middle button was pressed to act as wheel click
                 mouseClick(MOUSE_MIDDLE);
                 prev_middle_stat = false;
-                return (0);
+                return;
             }
         } else {
             // middle button stays being released
@@ -101,5 +100,4 @@ size_t BLEComboParser::parseHIDDataMouse(int8_t* buf)
             keyPress(KEY_MEDIA_MUTE);
         }
     }
-    return (0);
 }
