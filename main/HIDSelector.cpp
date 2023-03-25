@@ -28,11 +28,19 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
 
     if (ep == 2 && *((uint32_t*)buf) == 0x1000003) {
         // buf = {3, 0, 0, 1, } (Fn + Space)
-        delay(1000);
-        DEBUG_PRINTF("Reset USB\n");
-        pUsb->reset();
-        if (pUsb->Init() == -1)
-            DEBUG_PRINTF("OSC did not start.");
+        uint8_t lockLeds = 1;
+        SetReport(0, 0, 2, 0, 1, &lockLeds);
+        delay(200);
+        lockLeds = 2;
+        SetReport(0, 0, 2, 0, 1, &lockLeds);
+        delay(200);
+        lockLeds = 4;
+        SetReport(0, 0, 2, 0, 1, &lockLeds);
+        delay(200);
+        lockLeds = 0;
+        SetReport(0, 0, 2, 0, 1, &lockLeds);
+        DEBUG_PRINTF("Reset Controller\n");
+        ESP.restart();
         return;
     }
 
