@@ -1,9 +1,12 @@
 #include "HIDSelector.h"
 #include "DebugPrint.h"
+#include "MsgPipe.h"
 
-HIDSelector::HIDSelector(USB* p, BLEComboParser* ble)
+HIDSelector::HIDSelector(USB* p, MsgPipe<hidmsg_t>* hidpipe)
     : HIDComposite(p)
-    , _ble(ble) {};
+    , _hidpipe(hidpipe)
+{
+}
 
 // Return true for the interface we want to hook into
 bool HIDSelector::SelectInterface(uint8_t iface, uint8_t proto)
@@ -14,12 +17,6 @@ bool HIDSelector::SelectInterface(uint8_t iface, uint8_t proto)
 // Will be called for all HID data received from the USB interface
 void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t len, uint8_t* buf)
 {
-    static const parser_t parsers[] = {
-        (const parser_t)(NULL),
-        (const parser_t)(&BLEComboParser::parseHIDDataKeyboard),
-        (const parser_t)(&BLEComboParser::parseHIDDataMouse),
-    };
-
     DEBUG_PRINTF("HID %p, ep %d, is rpt %d, len %d, buf {", hid, ep, is_rpt_id, len);
     for (uint8_t i = 0; i < len; i++)
         DEBUG_PRINTF("%d, ", (int8_t)buf[i]);
@@ -43,14 +40,10 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
         ESP.restart();
         return;
     }
-
-    if (!(_ble->isConnected()))
-        return;
-    (_ble->*parsers[ep])((int8_t*)buf);
-    if (ep == 1) {
-        if (*((uint64_t*)buf) == 0) {
-            uint8_t lockLeds = _ble->getKeyLedValue();
-            hid->SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
-        }
-    }
+    hidmsg_t msg;
+    msg.ep = ep;
+    msg.len = len;
+    for (uint8_t i = 0; i < len; i++)
+        msg.buf[i] = buf[i];
+    _hidpipe->push(&msg);
 }
