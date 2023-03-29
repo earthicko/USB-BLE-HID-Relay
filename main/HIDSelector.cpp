@@ -1,6 +1,7 @@
 #include "HIDSelector.h"
 #include "DebugPrint.h"
 #include "MsgPipe.h"
+#include "remapKeyboard.h"
 
 HIDSelector::HIDSelector(USB* p, MsgPipe<hidmsg_t>* hidpipe)
     : HIDComposite(p)
@@ -40,6 +41,18 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
         ESP.restart();
         return;
     }
+
+    if (ep == 1) {
+        uint8_t modifierRemapped = 0;
+        for (int i = 0; i < 8; i++) {
+            if (buf[0] & keycodeMapModifier[i][0])
+                modifierRemapped |= keycodeMapModifier[i][1];
+        }
+        buf[0] = modifierRemapped;
+        for (int i = 2; i < 8; i++)
+            buf[i] = keycodeMap[buf[i]];
+    }
+
     hidmsg_t msg;
     msg.ep = ep;
     msg.len = len;
