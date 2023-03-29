@@ -15,6 +15,21 @@ bool HIDSelector::SelectInterface(uint8_t iface, uint8_t proto)
     return (proto != 0);
 }
 
+static void turnoffAllOutput(MsgPipe<hidmsg_t>* pipe)
+{
+    hidmsg_t msg;
+    msg.ep = 1;
+    msg.len = 8;
+    for (uint8_t i = 0; i < msg.len; i++)
+        msg.buf[i] = 0;
+    pipe->push(&msg);
+    msg.ep = 2;
+    msg.len = 8;
+    for (uint8_t i = 0; i < msg.len; i++)
+        msg.buf[i] = 0;
+    pipe->push(&msg);
+}
+
 // Will be called for all HID data received from the USB interface
 void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t len, uint8_t* buf)
 {
@@ -26,6 +41,7 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
 
     if (ep == 2 && *((uint32_t*)buf) == 0x1000003) {
         // buf = {3, 0, 0, 1, } (Fn + Space)
+        turnoffAllOutput(_hidpipe);
         uint8_t lockLeds = 1;
         SetReport(0, 0, 2, 0, 1, &lockLeds);
         delay(200);
