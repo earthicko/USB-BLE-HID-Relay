@@ -70,6 +70,7 @@ void BLETask(void* parameter) // Core 0 (BLE)
         (const parser_t)(&BLEComboParser::parseHIDDataKeyboard),
         (const parser_t)(&BLEComboParser::parseHIDDataMouse),
     };
+    static uint8_t lockLedsPrev;
     uint8_t lockLeds;
 
     DEBUG_PRINTF("BLETask start.\n");
@@ -79,7 +80,6 @@ void BLETask(void* parameter) // Core 0 (BLE)
             if (connection == false) {
                 DEBUG_PRINTF("BLE Connected\n");
                 lockLeds = ble.getKeyLedValue();
-                ledstatPipe.push(&lockLeds);
                 connection = true;
             }
             digitalWrite(MONITOR_PIN_LED, LOW);
@@ -108,7 +108,6 @@ void BLETask(void* parameter) // Core 0 (BLE)
                     digitalWrite(MONITOR_PIN_LED, LOW);
                     lockLeds = 7;
                 }
-                ledstatPipe.push(&lockLeds);
             }
         }
         hidmsg_t msg;
@@ -121,9 +120,13 @@ void BLETask(void* parameter) // Core 0 (BLE)
             continue;
         }
         (ble.*parsers[msg.ep])((int8_t*)msg.buf);
-        if (msg.ep == 1 && *((uint64_t*)msg.buf) == 0) {
+        if (msg.ep == 1 && *((uint64_t*)msg.buf) == 0)
             lockLeds = ble.getKeyLedValue();
+
+        if (lockLeds != lockLedsPrev) {
             ledstatPipe.push(&lockLeds);
+            DEBUG_PRINTF("LED Status updated to %#x\n", lockLeds);
+            lockLedsPrev = lockLeds;
         }
     }
 }
