@@ -108,6 +108,7 @@ void BLETask(void* parameter) // Core 0 (BLE)
                     digitalWrite(MONITOR_PIN_LED, LOW);
                     lockLeds = 7;
                 }
+                ledstatPipe.push(&lockLeds);
             }
         }
         hidmsg_t msg;
