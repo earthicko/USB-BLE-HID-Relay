@@ -45,6 +45,7 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
         uint8_t lockLeds = 7;
         SetReport(0, 0, 2, 0, 1, &lockLeds);
         DEBUG_PRINTF("Reset Controller\n");
+        delay(100);
         ESP.restart();
         return;
     }
