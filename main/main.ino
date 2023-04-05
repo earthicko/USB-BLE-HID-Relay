@@ -75,7 +75,7 @@ void loop()
         if (connection == false) {
             DEBUG_PRINTF("Connected\n");
             uint8_t lockLeds = relay._bleCombo.getKeyLedValue();
-            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+            relay._hidSelector.SetReport(0, 0, 2, 0, 1, &lockLeds);
             connection = true;
         }
         digitalWrite(MONITOR_PIN_LED, LOW);
@@ -103,7 +103,7 @@ void loop()
                 digitalWrite(MONITOR_PIN_LED, LOW);
                 lockLeds = 7;
             }
-            relay._hidSelector.SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+            relay._hidSelector.SetReport(0, 0, 2, 0, 1, &lockLeds);
         }
     }
 }
