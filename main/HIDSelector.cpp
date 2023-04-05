@@ -19,6 +19,7 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
         (const parser_t)(&BLEComboParser::parseHIDDataKeyboard),
         (const parser_t)(&BLEComboParser::parseHIDDataMouse),
     };
+    static uint8_t prevLockLeds;
 
     DEBUG_PRINTF("HID %p, ep %d, is rpt %d, len %d, buf {", hid, ep, is_rpt_id, len);
     for (uint8_t i = 0; i < len; i++)
@@ -28,17 +29,12 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
 
     if (ep == 2 && *((uint32_t*)buf) == 0x1000003) {
         // buf = {3, 0, 0, 1, } (Fn + Space)
-        uint8_t lockLeds = 1;
+        uint64_t empty;
+        _ble->parseHIDDataKeyboard((int8_t*)&empty);
+        _ble->parseHIDDataMouse((int8_t*)&empty);
+        uint8_t lockLeds = 7;
         SetReport(0, 0, 2, 0, 1, &lockLeds);
-        delay(200);
-        lockLeds = 2;
-        SetReport(0, 0, 2, 0, 1, &lockLeds);
-        delay(200);
-        lockLeds = 4;
-        SetReport(0, 0, 2, 0, 1, &lockLeds);
-        delay(200);
-        lockLeds = 0;
-        SetReport(0, 0, 2, 0, 1, &lockLeds);
+        delay(100);
         DEBUG_PRINTF("Reset Controller\n");
         ESP.restart();
         return;
@@ -50,7 +46,10 @@ void HIDSelector::ParseHIDData(USBHID* hid, uint8_t ep, bool is_rpt_id, uint8_t 
     if (ep == 1) {
         if (*((uint64_t*)buf) == 0) {
             uint8_t lockLeds = _ble->getKeyLedValue();
-            hid->SetReport(0, 0 /*hid->GetIface()*/, 2, 0, 1, &lockLeds);
+            if (lockLeds != prevLockLeds) {
+                hid->SetReport(0, 0, 2, 0, 1, &lockLeds);
+                prevLockLeds = lockLeds;
+            }
         }
     }
 }
