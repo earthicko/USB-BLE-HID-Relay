@@ -1,8 +1,8 @@
 #ifndef DEBUGPRINT_H
 #define DEBUGPRINT_H
 
-#include <Arduino.h>
 #include "SerialPrintf.h"
+#include <Arduino.h>
 
 // #define _DEBUG
 
