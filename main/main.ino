@@ -5,13 +5,19 @@
 #include <hidcomposite.h>
 #include <usbhub.h>
 
+#if defined(CONFIG_IDF_TARGET_ESP32S3)
+#define MONITOR_PIN_LED 13
+#define MONITOR_PIN_BATTERY_VOLT 4
+#else
+#define MONITOR_PIN_LED 22
+#define MONITOR_PIN_BATTERY_VOLT 4
+#endif
+
 /*
 Real    Divided  ADC
 4.2V -> 2.8V  -> 3475
 3.6V -> 2.4V  -> 2978
 */
-#define MONITOR_PIN_LED 22
-#define MONITOR_PIN_BATTERY_VOLT 4
 #define MONITOR_BATTERY_VOLT_MAX 3475
 #define MONITOR_BATTERY_VOLT_MIN 2978
 #define MONITOR_BLINK_PERIOD 1000
